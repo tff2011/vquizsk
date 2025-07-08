@@ -269,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 "description": "",
                 "descriptionColor": "#ffffff",
                 "buttonText": "Let's go... I'm ready!",
-                "delaySeconds": 5,
+                "delaySeconds": 8,
                 "interactionType": "button",
                 "options": [
                         {
@@ -624,7 +624,20 @@ document.addEventListener('DOMContentLoaded', () => {
             loadStep(currentStep);
         } else {
             
-            window.location.href = 'https://thesoulmatesketcher.com?src=vquiz';
+            // Preserva parâmetros UTM e src da URL atual
+            const currentParams = new URLSearchParams(window.location.search);
+            const checkoutURL = new URL('https://thesoulmatesketcher.com?src=vquiz');
+            
+            // Lista de parâmetros a serem preservados
+            const paramsToPreserve = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src'];
+            
+            paramsToPreserve.forEach(param => {
+                if (currentParams.has(param)) {
+                    checkoutURL.searchParams.set(param, currentParams.get(param));
+                }
+            });
+            
+            window.location.href = checkoutURL.toString();
             
         }
     });
