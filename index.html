@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VQUIZ: Psychic Luna - Soulmate Sketch</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .quiz-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-container {
+            width: 50%;
+            position: relative;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        .content-container {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .content h2 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #333;
+            display: none;
+        }
+
+        .content p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            color: #555;
+            display: none;
+        }
+
+        .content button {
+            padding: 15px 50px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background-color: #27ae60;
+            color: white;
+            border-radius: 30px;
+            transition: background-color 0.3s;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .content button:hover:not(:disabled) {
+            background-color: #27ae60dd;
+        }
+
+        .content button:disabled {
+            background-color: #95a5a6;
+            color: #ecf0f1;
+            cursor: not-allowed;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-item:hover {
+            border-color: #27ae60;
+            background-color: #27ae6040;
+        }
+
+        .option-item.selected {
+            border-color: #27ae60;
+            background-color: #27ae6020;
+        }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            margin-right: 10px;
+        }
+
+        .file-upload-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .file-upload-input {
+            padding: 10px;
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .file-upload-input:hover {
+            border-color: #27ae60;
+            background-color: #27ae6010;
+        }
+
+        .file-upload-input.has-file {
+            border-color: #27ae60;
+            background-color: #27ae6010;
+        }
+
+        @media (max-width: 1024px) {
+            .quiz-container {
+                flex-direction: column;
+                position: relative;
+            }
+
+            .video-container {
+                width: 100%;
+                height: 100vh;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 1;
+            }
+
+            .content-container {
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                z-index: 2;
+                background: transparent;
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                padding: 0 20px 40px 20px;
+                align-items: center;
+                pointer-events: none;
+            }
+            
+            .content {
+                width: 100%;
+                max-width: 500px;
+                text-align: center;
+                pointer-events: auto;
+            }
+
+            .content h2 {
+                color: white;
+                font-size: 1.8em;
+                margin-bottom: 15px;
+            }
+
+            .content p {
+                color: white;
+                font-size: 1em;
+                margin-bottom: 25px;
+            }
+
+            .content button {
+                width: 90%;
+                max-width: 400px;
+                padding: 18px 40px;
+                font-size: 1.1em;
+                margin: 0 auto;
+                display: block;
+            }
+
+            .content button:not(:disabled) {
+                background-color: #27ae60;
+            }
+
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateY(0); }
+            to { transform: translateY(-100%); }
+        }
+
+        .video-container.transitioning wistia-player {
+            animation: slideOut 0.5s ease-out forwards;
+        }
+
+        .video-container.entering wistia-player {
+            animation: slideUp 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container" id="quiz-container">
+        <div class="video-container">
+            <wistia-player media-id="homq6gp6cn" player-color="#8e44ad" 
+                autoplay silent-autoplay="allow" loop playsinline
+                video-foam="true" fit-strategy="cover"
+                style="width:100%;height:100%;"></wistia-player>
+        </div>
+        <div class="content-container">
+            <div class="content">
+                <h2 id="quiz-title"></h2>
+                <p id="quiz-description"></p>
+                <div id="interaction-container"></div>
+                <button id="next-button">Let's go... I'm ready!</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://fast.wistia.com/player.js" async></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+    const titleElement = document.getElementById('quiz-title');
+    const descriptionElement = document.getElementById('quiz-description');
+    const nextButton = document.getElementById('next-button');
+    const interactionContainer = document.getElementById('interaction-container');
+    const playerElement = document.querySelector('wistia-player');
+    const videoContainer = document.querySelector('.video-container');
+    
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+    const quizSteps = [
+        {
+                "video": "homq6gp6cn",
+                "title": "",
+                "titleColor": "#ffffff",
+                "description": "",
+                "descriptionColor": "#ffffff",
+                "buttonText": "Let's go... I'm ready!",
+                "delaySeconds": 5,
+                "interactionType": "button",
+                "options": [
+                        {
+                                "id": "1752013270487",
+                                "text": "Single & ready ✨"
+                        },
+                        {
+                                "id": "1752013271395",
+                                "text": ""
+                        },
+                        {
+                                "id": "1752013272167",
+                                "text": ""
+                        },
+                        {
+                                "id": "1752013272667",
+                                "text": ""
+                        }
+                ],
+                "acceptedFileTypes": ".pdf,.jpg,.jpeg,.png"
+        },
+        {
+                "video": "srjq25h7my",
+                "title": "",
+                "titleColor": "#ffffff",
+                "description": "",
+                "descriptionColor": "#ffffff",
+                "buttonText": "Continue",
+                "delaySeconds": 5,
+                "interactionType": "single-choice",
+                "options": [
+                        {
+                                "id": "1752013328507",
+                                "text": "Single & ready ✨"
+                        },
+                        {
+                                "id": "1752013329280",
+                                "text": "Sort-of dating 🤷‍♀️🤷‍♂️  "
+                        },
+                        {
+                                "id": "1752013329766",
+                                "text": "In a relationship that doesn’t fulfill me 😔"
+                        },
+                        {
+                                "id": "1752013330748",
+                                "text": "Totally blissful ❤️"
+                        }
+                ],
+                "acceptedFileTypes": ".pdf,.jpg,.jpeg,.png"
+        },
+        {
+                "video": "otyvwzme4m",
+                "title": "",
+                "titleColor": "#ffffff",
+                "description": "",
+                "descriptionColor": "#ffffff",
+                "buttonText": "Continue",
+                "delaySeconds": 5,
+                "interactionType": "single-choice",
+                "options": [
+                        {
+                                "id": "1752013419918",
+                                "text": "Their vibe / energy"
+                        },
+                        {
+                                "id": "1752013420423",
+                                "text": "Facial features 👁️"
+                        },
+                        {
+                                "id": "1752013421198",
+                                "text": "Voice or presence 🎶"
+                        },
+                        {
+                                "id": "1752013421690",
+                                "text": "Nothing in particular 🤔"
+                        }
+                ],
+                "acceptedFileTypes": ".pdf,.jpg,.jpeg,.png"
+        },
+        {
+                "video": "f13uuy7g1d",
+                "title": "",
+                "titleColor": "#ffffff",
+                "description": "",
+                "descriptionColor": "#ffffff",
+                "buttonText": "Continue",
+                "delaySeconds": 5,
+                "interactionType": "single-choice",
+                "options": [
+                        {
+                                "id": "1752013446947",
+                                "text": "All the time ✨"
+                        },
+                        {
+                                "id": "1752013447475",
+                                "text": "Now and then 🌙"
+                        },
+                        {
+                                "id": "1752013447976",
+                                "text": "Rarely 🙈"
+                        },
+                        {
+                                "id": "1752013448448",
+                                "text": "Never 🙅"
+                        }
+                ],
+                "acceptedFileTypes": ".pdf,.jpg,.jpeg,.png"
+        },
+        {
+                "video": "gc5fdbg7vm",
+                "title": "",
+                "titleColor": "#ffffff",
+                "description": "",
+                "descriptionColor": "#ffffff",
+                "buttonText": "Continue",
+                "delaySeconds": 5,
+                "interactionType": "single-choice",
+                "options": [
+                        {
+                                "id": "1752013480700",
+                                "text": "Grab it now 🚀"
+                        },
+                        {
+                                "id": "1752013481749",
+                                "text": "Need to know the price 💬"
+                        },
+                        {
+                                "id": "1752013482262",
+                                "text": "Maybe later ⏳"
+                        },
+                        {
+                                "id": "1752013482776",
+                                "text": "No thanks 🙅"
+                        }
+                ],
+                "acceptedFileTypes": ".pdf,.jpg,.jpeg,.png"
+        }
+];
+
+    let currentStep = 0;
+    let wistiaPlayer;
+    let countdownInterval;
+    let isTransitioning = false;
+    let selectedOptions = [];
+    let uploadedFile = null;
+
+    if (playerElement && playerElement.whenPlayerReady) {
+        playerElement.whenPlayerReady().then(player => {
+            wistiaPlayer = player;
+        });
+    }
+
+    function transitionToNextVideo(videoId) {
+        if (isTransitioning) return;
+        isTransitioning = true;
+
+        videoContainer.classList.add('transitioning');
+        
+        setTimeout(() => {
+            const oldPlayer = videoContainer.querySelector('wistia-player');
+            if (oldPlayer) {
+                oldPlayer.remove();
+            }
+
+            const newPlayer = document.createElement('wistia-player');
+            newPlayer.setAttribute('media-id', videoId);
+            newPlayer.setAttribute('player-color', '#8e44ad');
+            newPlayer.setAttribute('autoplay', '');
+            newPlayer.setAttribute('silent-autoplay', 'allow');
+            newPlayer.setAttribute('loop', '');
+            newPlayer.setAttribute('playsinline', '');
+            newPlayer.setAttribute('video-foam', 'true');
+            newPlayer.setAttribute('fit-strategy', 'cover');
+            newPlayer.style.width = '100%';
+            newPlayer.style.height = '100%';
+            
+            videoContainer.appendChild(newPlayer);
+            
+            videoContainer.classList.remove('transitioning');
+            videoContainer.classList.add('entering');
+            
+            setTimeout(() => {
+                if (newPlayer.whenPlayerReady) {
+                    newPlayer.whenPlayerReady().then(player => {
+                        wistiaPlayer = player;
+                    });
+                }
+            }, 100);
+            
+            setTimeout(() => {
+                videoContainer.classList.remove('entering');
+                isTransitioning = false;
+            }, 500);
+        }, 500);
+    }
+
+    function renderInteraction(data) {
+        interactionContainer.innerHTML = '';
+        selectedOptions = [];
+        uploadedFile = null;
+
+        if (data.interactionType === 'single-choice' || data.interactionType === 'multiple-choice') {
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options-container';
+            
+            data.options?.forEach((option, index) => {
+                const optionItem = document.createElement('label');
+                optionItem.className = 'option-item';
+                
+                const input = document.createElement('input');
+                input.type = data.interactionType === 'single-choice' ? 'radio' : 'checkbox';
+                input.name = 'quiz-option';
+                input.value = option.text;
+                input.addEventListener('change', (e) => {
+                    if (data.interactionType === 'single-choice') {
+                        selectedOptions = [option.text];
+                        document.querySelectorAll('.option-item').forEach(el => el.classList.remove('selected'));
+                        if (e.target.checked) optionItem.classList.add('selected');
+                    } else {
+                        if (e.target.checked) {
+                            selectedOptions.push(option.text);
+                            optionItem.classList.add('selected');
+                        } else {
+                            selectedOptions = selectedOptions.filter(opt => opt !== option.text);
+                            optionItem.classList.remove('selected');
+                        }
+                    }
+                    checkButtonState();
+                });
+                
+                const label = document.createElement('span');
+                label.textContent = option.text;
+                
+                optionItem.appendChild(input);
+                optionItem.appendChild(label);
+                optionsDiv.appendChild(optionItem);
+            });
+            
+            interactionContainer.appendChild(optionsDiv);
+        }
+        
+        else if (data.interactionType === 'file-upload') {
+            const fileDiv = document.createElement('div');
+            fileDiv.className = 'file-upload-container';
+            
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = data.acceptedFileTypes || '.pdf,.jpg,.jpeg,.png';
+            fileInput.style.display = 'none';
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    uploadedFile = e.target.files[0];
+                    fileLabel.textContent = uploadedFile.name;
+                    fileLabel.classList.add('has-file');
+                    checkButtonState();
+                }
+            });
+            
+            const fileLabel = document.createElement('label');
+            fileLabel.className = 'file-upload-input';
+            fileLabel.textContent = 'Clique para selecionar arquivo';
+            fileLabel.style.cursor = 'pointer';
+            fileLabel.onclick = () => fileInput.click();
+            
+            fileDiv.appendChild(fileInput);
+            fileDiv.appendChild(fileLabel);
+            interactionContainer.appendChild(fileDiv);
+        }
+    }
+
+    function checkButtonState() {
+        const data = quizSteps[currentStep];
+        if (data.interactionType === 'button') {
+            return;
+        }
+        
+        let isValid = false;
+        if (data.interactionType === 'single-choice' || data.interactionType === 'multiple-choice') {
+            isValid = selectedOptions.length > 0;
+        } else if (data.interactionType === 'file-upload') {
+            isValid = uploadedFile !== null;
+        }
+        
+        // Só habilita o botão se for válido E o countdown tiver terminado
+        nextButton.disabled = !isValid || countdownInterval !== null;
+    }
+
+    function loadStep(step) {
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+        }
+
+        const data = quizSteps[step];
+
+        titleElement.textContent = data.title;
+        descriptionElement.textContent = data.description;
+        
+        // Aplica as cores personalizadas
+        titleElement.style.color = data.titleColor || '#ffffff';
+        descriptionElement.style.color = data.descriptionColor || '#ffffff';
+        
+        titleElement.style.display = data.title ? 'block' : 'none';
+        descriptionElement.style.display = data.description ? 'block' : 'none';
+
+        // Esconde as interações inicialmente se não for botão simples
+        if (data.interactionType !== 'button') {
+            interactionContainer.style.display = 'none';
+        }
+
+        renderInteraction(data);
+
+        if (step > 0) {
+            transitionToNextVideo(data.video);
+        }
+
+        nextButton.disabled = true;
+        nextButton.style.display = data.interactionType === 'button' ? 'block' : 'block';
+        
+        let countdown = data.delaySeconds || 10;
+        const originalButtonText = data.buttonText;
+
+        nextButton.textContent = `${countdown}s`;
+
+        countdownInterval = setInterval(() => {
+            countdown--;
+            if (countdown > 0) {
+                nextButton.textContent = `${countdown}s`;
+            } else {
+                clearInterval(countdownInterval);
+                countdownInterval = null;
+                nextButton.textContent = originalButtonText;
+                
+                // Mostra as interações quando o countdown terminar
+                if (data.interactionType !== 'button') {
+                    interactionContainer.style.display = 'block';
+                }
+                
+                if (data.interactionType === 'button') {
+                    nextButton.disabled = false;
+                } else {
+                    checkButtonState();
+                }
+            }
+        }, 1000);
+    }
+
+    nextButton.addEventListener('click', async () => {
+        if (isTransitioning) return;
+        
+        currentStep++;
+        if (currentStep < quizSteps.length) {
+            loadStep(currentStep);
+        } else {
+            
+            window.location.href = 'https://thesoulmatesketcher.com?src=vquiz';
+            
+        }
+    });
+
+    loadStep(0);
+});
+    </script>
+</body>
+</html>
